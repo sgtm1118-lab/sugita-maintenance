@@ -41,7 +41,7 @@
     }
   }
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
+  html{scroll-behavior:smooth;overflow-x:clip}
   body{
     margin:0;
     font-family:"Noto Sans JP",-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
@@ -49,6 +49,8 @@
     background:var(--bg);
     line-height:1.75;
     -webkit-font-smoothing:antialiased;
+    overflow-x:clip;
+    max-width:100%;
   }
   img{max-width:100%;display:block}
   a{color:var(--blue)}
@@ -408,37 +410,6 @@
   .form-msg{font-weight:700;color:var(--blue);margin:16px 0 0;display:none}
   .form-msg.show{display:block}
 
-  /* ---------- ledger (trial) ---------- */
-  .ledger-tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
-  .ledger-count{font-weight:900;color:var(--navy);font-size:1.02rem}
-  @media (prefers-color-scheme: dark){.ledger-count{color:#fff}}
-  .btn-csv{background:var(--navy);color:#fff;border:0;cursor:pointer;font-family:inherit}
-  .btn-csv:hover{background:var(--navy-2)}
-  .ledger-box{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 6px 20px rgba(6,38,77,.07)}
-  table.ledger{width:100%;border-collapse:collapse;font-size:.86rem}
-  table.ledger th{background:var(--navy);color:#fff;text-align:left;padding:11px 10px;font-weight:900;white-space:nowrap}
-  table.ledger td{border-top:1px solid var(--line);padding:10px;vertical-align:top;color:var(--ink);line-height:1.55}
-  table.ledger td .sub{display:block;font-size:.78rem;color:var(--muted);margin-top:2px;word-break:break-all}
-  table.ledger td .detail{white-space:pre-wrap;word-break:break-word}
-  table.ledger select,table.ledger input{
-    font:inherit;font-size:.85rem;padding:8px;border:1.5px solid var(--line);border-radius:8px;
-    background:var(--bg);color:var(--ink);min-height:40px;width:100%;
-  }
-  table.ledger tr.empty-row td{text-align:center;color:var(--muted);padding:30px 14px;font-size:.92rem}
-  .ledger-note{font-size:.85rem;color:var(--muted);margin:14px 0 0}
-  @media (max-width:860px){
-    table.ledger thead{display:none}
-    table.ledger,table.ledger tbody,table.ledger tr,table.ledger td{display:block;width:100%}
-    table.ledger tr{border-top:1px solid var(--line);padding:8px 2px}
-    table.ledger tbody tr:first-child{border-top:0}
-    table.ledger td{border-top:0;display:flex;gap:10px;align-items:flex-start;padding:7px 12px}
-    table.ledger td::before{content:attr(data-label);flex:0 0 6.4em;font-weight:900;color:var(--navy);font-size:.8rem;padding-top:3px}
-    @media (prefers-color-scheme: dark){table.ledger td::before{color:#fff}}
-    table.ledger td .cellbody{flex:1;min-width:0}
-    table.ledger tr.empty-row td{display:block;text-align:center}
-    table.ledger tr.empty-row td::before{content:none}
-  }
-
   /* fixed mobile call bar */
   .callbar{
     position:fixed;left:0;right:0;bottom:0;z-index:60;display:none;gap:10px;
@@ -448,6 +419,47 @@
   @media (prefers-color-scheme: dark){.callbar{background:rgba(7,30,58,.94)}}
   .callbar a{flex:1;justify-content:center}
   @media (max-width:760px){.callbar{display:flex}}
+
+  /* ---------- Overflow fixes (mobile) ---------- */
+  /* Long unbreakable strings (email addresses) must wrap anywhere */
+  a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-all}
+  .contact-box p{overflow-wrap:anywhere}
+  .contact-box>div{min-width:0}
+  .contact-box{min-width:0;max-width:100%}
+  .wrap,.head-in,.hero-banner-wrap,.form-card,.mitchan,.price-box{min-width:0;max-width:100%}
+  .btn{max-width:100%}
+  table.info{max-width:100%}
+  table.info td{overflow-wrap:anywhere;word-break:break-word;min-width:0}
+  table.info td a{overflow-wrap:anywhere;word-break:break-all}
+  .big-tel{flex-wrap:wrap;max-width:100%}
+  /* Contact CTA buttons: never push past the box edge */
+  .contact-box .hero-cta{max-width:100%}
+  .contact-box .hero-cta .btn{min-width:0}
+  /* Fixed call bar: keep labels on one line, shrink padding on small screens */
+  .callbar a{white-space:nowrap;min-width:0}
+  .callbar .btn{overflow:hidden;text-overflow:ellipsis}
+  @media (max-width:760px){
+    .contact-box .hero-cta{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .contact-box .hero-cta .btn{padding:13px 8px;font-size:.95rem;justify-content:center;text-align:center;white-space:nowrap}
+    .callbar .btn{padding:12px 10px;font-size:.98rem}
+  }
+  @media (max-width:640px){
+    /* Company-info table: stack label above value so nothing is squeezed off-screen */
+    table.info,table.info tbody,table.info tr,table.info th,table.info td{display:block;width:100%}
+    table.info tr{border-bottom:1px solid var(--line);padding:10px 0}
+    table.info tr:last-child{border-bottom:0}
+    table.info th{width:auto;white-space:normal;border-bottom:0;padding:0 0 2px;font-size:.88rem}
+    table.info td{border-bottom:0;padding:0}
+    .contact-box{padding:24px 16px;gap:24px}
+    .big-tel{font-size:1.55rem;gap:8px}
+    .big-tel svg{width:28px;height:28px}
+  }
+  @media (max-width:380px){
+    .contact-box .hero-cta{grid-template-columns:1fr}
+    .callbar{gap:8px;padding-left:10px;padding-right:10px}
+    .callbar .btn{padding:11px 6px;font-size:.92rem;gap:6px}
+    .callbar .btn svg{width:18px;height:18px}
+  }
 </style>
 </head>
 <body>
@@ -483,7 +495,6 @@
       <li><a href="#partners">主要取引先</a></li>
       <li><a href="#mitchan">みっちゃん本舗</a></li>
       <li><a href="#form">申し込みフォーム</a></li>
-      <li><a href="#ledger">顧客台帳（試作）</a></li>
       <li><a href="#company">会社概要・お問い合わせ</a></li>
     </ul>
   </nav>
@@ -811,7 +822,7 @@
 
   <div class="band">お申し込みフォーム</div>
 
-  <!-- INQUIRY FORM (trial) -->
+  <!-- INQUIRY FORM -->
   <section class="sec" id="form">
     <div class="wrap">
       <h2 class="sec-title">ご依頼・ご相談の<span class="accent">お申し込み</span></h2>
@@ -865,7 +876,7 @@
             <textarea id="f-detail" name="detail" required placeholder="例）キッチンの蛇口から水漏れしています。写真もお送りできます。希望日は来週の平日午前中です。"></textarea>
           </div>
         </div>
-        <p class="form-note">「送信する」を押すと、入力内容が入ったメールアプリが開きます。そのまま送信していただくと受付完了です。あわせて、下の「顧客台帳（試作）」にもその場で仮登録され、動きをご確認いただけます。</p>
+        <p class="form-note">「送信する」を押すと、入力内容が入ったメールアプリが開きます。そのまま送信していただくと受付完了です。</p>
         <div class="form-actions">
           <button type="submit" class="btn btn-submit">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
@@ -875,43 +886,6 @@
         </div>
         <p class="form-msg" id="formMsg" role="status"></p>
       </form>
-    </div>
-  </section>
-
-  <!-- LEDGER (trial) -->
-  <section class="sec alt" id="ledger">
-    <div class="wrap">
-      <h2 class="sec-title">顧客台帳<span class="accent">（試作）</span></h2>
-      <p class="sec-lead">フォームから送信した内容が、そのまま台帳の形で一覧になります。対応状況・見積／施工日・金額は、この画面で書き換えて試せます。</p>
-      <div class="ledger-tools">
-        <span class="ledger-count" id="ledgerCount">登録件数：0件</span>
-        <button type="button" class="btn btn-csv" id="csvBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
-          台帳をCSVで保存
-        </button>
-      </div>
-      <div class="ledger-box">
-        <table class="ledger">
-          <thead>
-            <tr>
-              <th>受付日時</th>
-              <th>お客様名</th>
-              <th>連絡先</th>
-              <th>依頼の種類</th>
-              <th>内容</th>
-              <th>対応状況</th>
-              <th>見積・施工日</th>
-              <th>金額（円）</th>
-            </tr>
-          </thead>
-          <tbody id="ledgerBody">
-            <tr class="empty-row" id="ledgerEmpty">
-              <td colspan="8">まだ登録がありません。上のフォームから送信すると、ここに表示されます。</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="ledger-note">※試作版のため、台帳の内容はこのページを開いている間だけ表示されます（ページを閉じると消えます）。残したい分は「台帳をCSVで保存」からファイルに保存してください。本番運用では、送信と同時にスプレッドシートの台帳へ自動記録し、通知メールが届く形にします。</p>
     </div>
   </section>
 
@@ -982,7 +956,6 @@
       <a href="#partners">主要取引先</a>
       <a href="#mitchan">みっちゃん本舗</a>
       <a href="#form">申し込みフォーム</a>
-      <a href="#ledger">顧客台帳（試作）</a>
       <a href="#company">会社概要・お問い合わせ</a>
       <a href="https://mitchan-honpo.com/" target="_blank" rel="noopener">みっちゃん本舗 ホームページ</a>
     </nav>
@@ -1018,34 +991,13 @@
 <script>
   (function(){
     var form = document.getElementById('inquiryForm');
-    var tbody = document.getElementById('ledgerBody');
-    var emptyRow = document.getElementById('ledgerEmpty');
-    var countEl = document.getElementById('ledgerCount');
     var msgEl = document.getElementById('formMsg');
-    var csvBtn = document.getElementById('csvBtn');
-    if(!form || !tbody) return;
-    var entries = [];
+    if(!form) return;
 
     function pad(n){ return (n < 10 ? '0' : '') + n; }
     function nowText(){
       var d = new Date();
       return d.getFullYear() + '/' + pad(d.getMonth()+1) + '/' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
-    }
-    function makeEl(tag, cls, text){
-      var e = document.createElement(tag);
-      if(cls) e.className = cls;
-      if(text != null) e.textContent = text;
-      return e;
-    }
-    function cell(label){
-      var td = document.createElement('td');
-      td.setAttribute('data-label', label);
-      var body = makeEl('span', 'cellbody');
-      td.appendChild(body);
-      return {td: td, body: body};
-    }
-    function updateCount(){
-      countEl.textContent = '登録件数：' + entries.length + '件';
     }
 
     form.addEventListener('submit', function(ev){
@@ -1060,48 +1012,6 @@
       var methodEl = form.querySelector('input[name="method"]:checked');
       var method = methodEl ? methodEl.value : 'どちらでも';
       var stamp = nowText();
-
-      var entry = {date: stamp, name: name, company: company, tel: tel, email: email, address: address, type: type, method: method, detail: detail, status: null, schedule: null, amount: null};
-
-      var tr = document.createElement('tr');
-      var cDate = cell('受付日時'); cDate.body.textContent = stamp; tr.appendChild(cDate.td);
-      var cName = cell('お客様名'); cName.body.appendChild(document.createTextNode(name));
-      if(company){ cName.body.appendChild(makeEl('span', 'sub', company)); }
-      tr.appendChild(cName.td);
-      var cContact = cell('連絡先'); cContact.body.appendChild(document.createTextNode(tel));
-      if(email){ cContact.body.appendChild(makeEl('span', 'sub', email)); }
-      cContact.body.appendChild(makeEl('span', 'sub', '希望連絡：' + method));
-      tr.appendChild(cContact.td);
-      var cType = cell('依頼の種類'); cType.body.textContent = type; tr.appendChild(cType.td);
-      var cDetail = cell('内容'); var dSpan = makeEl('span', 'detail', detail); cDetail.body.appendChild(dSpan);
-      if(address){ cDetail.body.appendChild(makeEl('span', 'sub', '施工場所：' + address)); }
-      tr.appendChild(cDetail.td);
-
-      var cStatus = cell('対応状況');
-      var sel = document.createElement('select');
-      sel.setAttribute('aria-label', '対応状況');
-      ['未対応','連絡済み','見積済み','施工日決定','完了'].forEach(function(s){
-        var o = document.createElement('option'); o.value = s; o.textContent = s; sel.appendChild(o);
-      });
-      cStatus.body.appendChild(sel); tr.appendChild(cStatus.td);
-      entry.status = sel;
-
-      var cSched = cell('見積・施工日');
-      var dateIn = document.createElement('input');
-      dateIn.type = 'date'; dateIn.setAttribute('aria-label', '見積・施工日');
-      cSched.body.appendChild(dateIn); tr.appendChild(cSched.td);
-      entry.schedule = dateIn;
-
-      var cAmount = cell('金額（円）');
-      var amtIn = document.createElement('input');
-      amtIn.type = 'text'; amtIn.inputMode = 'numeric'; amtIn.placeholder = '例）55000'; amtIn.setAttribute('aria-label', '金額（円）');
-      cAmount.body.appendChild(amtIn); tr.appendChild(cAmount.td);
-      entry.amount = amtIn;
-
-      entries.unshift(entry);
-      if(emptyRow && emptyRow.parentNode) emptyRow.parentNode.removeChild(emptyRow);
-      tbody.insertBefore(tr, tbody.firstChild);
-      updateCount();
 
       var lines = [
         'お名前：' + name,
@@ -1120,38 +1030,12 @@
         + '?subject=' + encodeURIComponent('【杉田メンテナンス】お申し込み（' + type + '）' + name + '様')
         + '&body=' + encodeURIComponent(lines.join('\n'));
 
-      msgEl.textContent = '顧客台帳（試作）に仮登録しました。メールアプリが開きますので、そのまま送信してください。';
-      msgEl.classList.add('show');
+      if(msgEl){
+        msgEl.textContent = 'メールアプリが開きますので、そのまま送信してください。';
+        msgEl.classList.add('show');
+      }
       form.reset();
       window.location.href = mailto;
-      document.getElementById('ledger').scrollIntoView({behavior:'smooth', block:'start'});
-    });
-
-    function csvQuote(v){
-      return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-    }
-    csvBtn.addEventListener('click', function(){
-      if(!entries.length){
-        msgEl.textContent = '台帳に登録がまだありません。先にフォームから送信してください。';
-        msgEl.classList.add('show');
-        document.getElementById('form').scrollIntoView({behavior:'smooth', block:'start'});
-        return;
-      }
-      var head = ['受付日時','お客様名','会社名','電話番号','メールアドレス','施工場所','依頼の種類','希望連絡方法','内容','対応状況','見積・施工日','金額（円）'];
-      var rows = [head.map(csvQuote).join(',')];
-      entries.forEach(function(e){
-        rows.push([e.date, e.name, e.company, e.tel, e.email, e.address, e.type, e.method, e.detail,
-          e.status ? e.status.value : '', e.schedule ? e.schedule.value : '', e.amount ? e.amount.value : ''].map(csvQuote).join(','));
-      });
-      var blob = new Blob(['\ufeff' + rows.join('\r\n')], {type:'text/csv;charset=utf-8'});
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url;
-      a.download = '杉田メンテナンス顧客台帳（試作）.csv';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
     });
   })();
 </script>
